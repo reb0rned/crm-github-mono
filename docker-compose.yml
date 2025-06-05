@@ -1,0 +1,39 @@
+services:
+  frontend:
+    build:
+      context: ./crm-github-api-FRONTEND
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    working_dir: /app
+    volumes:
+      - ./crm-github-api-FRONTEND:/app
+      - /app/node_modules
+    command: npm run dev -- --host
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./crm-github-api-BACKEND
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000"
+    working_dir: /app
+    volumes:
+      - ./crm-github-api-BACKEND:/app
+      - /app/node_modules
+    command: npm run dev
+    environment:
+      - PORT=5000
+      - MONGO_URL=mongodb://mongo:27017/github-crm
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
